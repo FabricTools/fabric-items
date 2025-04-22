@@ -25,7 +25,9 @@
 
   <Target Name="AddLocalOutputToPackage" Condition=" '$(Configuration)' == 'Release' ">
     <ItemGroup>
-      <BuildOutputInPackage Include="@(ReferencePathWithRefAssemblies)" Condition="'%(Filename)' == 'FabricTools.Items.AnyOf'" />
+      <BuildOutputInPackage Include="@(ReferencePathWithRefAssemblies)" Condition="'%(Filename)' == 'FabricTools.Items.AnyOf'">
+        <FinalOutputPath>%(ReferencePathWithRefAssemblies.OriginalItemSpec)</FinalOutputPath>
+      </BuildOutputInPackage>
     </ItemGroup>
     <Message Importance="high" Text="Added BuildOutputInPackage: @(BuildOutputInPackage)" />
   </Target>
