@@ -1,0 +1,54 @@
+{
+    "files.associations": {
+        "*.pbir": "json",
+        "*.pbism": "json",
+        "*.pbip": "json"
+    },
+    "json.schemas": [
+        {
+            "fileMatch": [
+                "*.pbism"
+            ],
+            "url": "https://raw.githubusercontent.com/microsoft/powerbi-desktop-samples/main/item-schemas/dataset/definition.pbidataset-1.0.json"
+        },
+        {
+            "fileMatch": [
+                "*.SemanticModel/.pbi/editorSettings.json"
+            ],
+            "url": "https://raw.githubusercontent.com/microsoft/powerbi-desktop-samples/main/item-schemas/dataset/editorSettings-1.0.json"
+        },
+        {
+            "fileMatch": [
+                "*.SemanticModel/.pbi/localsettings.json"
+            ],
+            "url": "https://raw.githubusercontent.com/microsoft/powerbi-desktop-samples/main/item-schemas/dataset/localSettings-1.0.json"
+        },
+        {
+            "fileMatch": [
+                "*.SemanticModel/.pbi/unappliedchanges.json"
+            ],
+            "url": "https://raw.githubusercontent.com/microsoft/powerbi-desktop-samples/main/item-schemas/dataset/unappliedChanges-1.0.json"
+        },
+        {
+            "fileMatch": [
+                "*.pbir"
+            ],
+            "url": "https://raw.githubusercontent.com/microsoft/powerbi-desktop-samples/main/item-schemas/report/definition.pbir-1.0.json"
+        },
+        {
+            "fileMatch": [
+                "*.Report/.pbi/localsettings.json"
+            ],
+            "url": "https://raw.githubusercontent.com/microsoft/powerbi-desktop-samples/main/item-schemas/report/localSettings-1.0.json"
+        },
+        {
+            "fileMatch": [
+                "*.pbip"
+            ],
+            "url": "https://raw.githubusercontent.com/microsoft/powerbi-desktop-samples/main/item-schemas/common/pbip-1.0.json"
+        }
+    ],
+    "dotnet.preferCSharpExtension": true,
+    "dotnet.automaticallyCreateSolutionInWorkspace": false,
+    "dotnet.defaultSolution": "disable"
+}

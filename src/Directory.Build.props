@@ -1,0 +1,65 @@
+<Project>
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net8.0;net9.0</TargetFrameworks>
+    <Nullable>enable</Nullable>
+    <RootNamespace>FabricTools.Items</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IsPackable>true</IsPackable>
+    <GeneratePackageOnBuild Condition=" '$(GeneratePackageOnBuild)' == '' ">true</GeneratePackageOnBuild>
+    <PackageOutputPath>$(MSBuildThisFileDirectory)../.out/packages</PackageOutputPath>
+    <NoWarn>$(NoWarn);CS8601</NoWarn>
+    <PackageIcon>FabricTools.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile> <!-- https://learn.microsoft.com/en-us/nuget/reference/msbuild-targets#packagereadmefile -->
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(ENVIRONMENT)' == 'nuget.org' ">
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(ENVIRONMENT)' == 'github' ">
+    <IncludeSymbols>false</IncludeSymbols>
+    <DebugType>embedded</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="/" />
+    <None Include="$(MSBuildThisFileDirectory)../FabricTools.png">
+      <Link>FabricTools.png</Link>
+      <Pack>True</Pack>
+      <PackagePath>/</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Microsoft.Extensions.Logging" />
+    <Using Include="navidataIO.Utils" />
+    <Using Include="navidataIO.Utils.IO" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' " >
+    <PackageReference Include="IndexRange" />
+    <PackageReference Include="IsExternalInit">
+      <PrivateAssets>All</PrivateAssets>
+      <IncludeAssets>build;contentFiles</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\utils\FabricTools.Items.AnyOf\FabricTools.Items.AnyOf.csproj" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- This won't work with GenerateAssemblyInfo=false -->
+    <InternalsVisibleTo Include="$(AssemblyName).Tests" />
+  </ItemGroup>
+
+</Project>

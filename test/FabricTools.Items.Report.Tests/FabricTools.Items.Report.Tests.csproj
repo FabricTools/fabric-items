@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);IO0007</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\external\pbir-samples\powerbi-desktop-samples\**\*.json"
+                      Exclude="..\..\external\pbir-samples\powerbi-desktop-samples\*.SemanticModel\**;..\..\external\pbir-samples\powerbi-desktop-samples\*\CustomVisuals\**;..\..\external\pbir-samples\powerbi-desktop-samples\*\StaticResources\**;..\..\external\pbir-samples\powerbi-desktop-samples\*\.pbi\**">
+      <LinkBase>Samples</LinkBase>
+      <LogicalName>%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="navidataIO.Utils.Testing.Xunit3" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="AnyOf.Newtonsoft.Json" />
+    <PackageReference Include="System.IO.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\FabricTools.Items.Report\FabricTools.Items.Report.csproj" />
+    <ProjectReference Include="..\..\utils\FabricTools.Items.AnyOf\FabricTools.Items.AnyOf.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="navidataIO.Utils" />
+    <Using Include="navidataIO.Utils.IO" />
+    <Using Include="navidataIO.Utils.Testing" />
+  </ItemGroup>
+
+</Project>

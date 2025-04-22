@@ -1,0 +1,238 @@
+name: CI
+run-name: '${{ github.workflow }} [${{ github.event_name }}:${{ github.ref_name }}]'
+
+on:
+  push:
+    tags:
+      - '*'       # Create nuget.org releases from tags only (must verify source branch in job)
+  pull_request:
+    branches:     # pull requests into the main branch publish to GitHub packages, all others merely publish build artifacts
+      - main
+      - release/*
+      - Release/*
+  workflow_dispatch:
+
+env:
+  ENVIRONMENT: >-
+    ${{ (github.event_name == 'push' && github.ref_type == 'tag' && github.event.base_ref == 'refs/heads/main') 
+        && 'nuget.org' 
+        || ((github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'main') 
+            && 'github' 
+            || 'dev') }}
+
+jobs:
+  build-pack-test:
+    runs-on: ubuntu-latest
+    if: github.ref_type != 'tag' || github.event.base_ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: read
+    env:
+      LOGGER_VERBOSITY: minimal
+      NuGetPackageSourceCredentials_FabricToolsGH: "Username=${{ github.repository_owner }};Password=${{ secrets.GITHUB_TOKEN }}"
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        submodules: false
+    - uses: actions/checkout@v4
+      name: Checkout microsoft/json-schemas
+      with:
+        repository: microsoft/json-schemas
+        path: 'external/json-schemas'
+        sparse-checkout: |
+          fabric
+    - uses: actions/checkout@v4
+      name: Checkout pbir-samples
+      with:
+        repository: FabricTools/pbir-samples
+        path: 'external/pbir-samples'
+        sparse-checkout: |
+          powerbi-desktop-samples
+      
+    - name: 'Cache: ~/.nuget/packages'
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.nuget/packages
+        key: nuget-${{ hashFiles('**/global.json', '**/*.csproj', '**/Directory.Packages.props') }}
+        restore-keys: |
+          nuget-
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v4
+    - name: Register private GitHub Packages NuGet feed
+      run: dotnet nuget add source --name FabricToolsGH "https://nuget.pkg.github.com/FabricTools/index.json"
+    - name: dotnet info
+      run: |
+        echo "::group::dotnet info"
+        dotnet --info
+        echo "::endgroup::"
+        echo "::group::nuget sources"
+        dotnet nuget list source
+        echo "::endgroup::"
+
+    - name: dotnet restore
+      run: dotnet restore
+    - name: dotnet build & pack
+      run: |
+        dotnet build \
+          -c Release \
+          -p:ENVIRONMENT=${{env.ENVIRONMENT}} \
+          -p:PackageOutputPath=../../out/packages \
+          --no-restore
+    - name: dotnet test (Linux/net8.0)
+      run: |
+        dotnet test -c Release -f net8.0 --no-build --verbosity ${{env.LOGGER_VERBOSITY}}
+    - name: dotnet test (Linux/net9.0)
+      run: |
+        dotnet test -c Release -f net9.0 --no-build --verbosity ${{env.LOGGER_VERBOSITY}}
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: ./test/*/bin/Release/*/TestResults/
+  
+    - name: List output files
+      run: ls -la ./out
+    - name: Upload Artifact
+      id: upload-nupkg
+      uses: actions/upload-artifact@v4
+      with:
+        name: nuget-packages
+        path: ./out/packages/*nupkg
+
+    - name: Job Summary
+      run: |
+        echo "# Build/Pack/Test: ${{ env.GitVersion_SemVer }} from branch: ${{ env.GitVersion_BranchName }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "NUPKG Artifact Url: ${{ steps.upload-nupkg.outputs.artifact-url }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+
+    outputs:
+      PKG_VERSION: ${{ env.GitVersion_SemVer }}
+      FULL_VERSION: ${{ env.GitVersion_FullSemVer }}
+      BRANCH_NAME: ${{ env.GitVersion_BranchName }}
+
+  sign-packages:
+    if: >
+      (github.event_name == 'pull_request' && 
+       github.event.pull_request.base.ref == 'main') || 
+      (github.event_name == 'push' && 
+       github.ref_type == 'tag' && 
+       github.event.base_ref == 'refs/heads/main')
+    runs-on: windows-latest
+    needs: build-pack-test
+    permissions:
+      id-token: write
+
+    steps:
+    - name: Download NUPKG
+      uses: actions/download-artifact@v4
+      with:
+        name: nuget-packages
+        path: ./packages
+    - name: List downloaded files
+      run: ls -R ./packages
+
+    - name: Install AzureSignTool
+      run: dotnet tool install -g NuGetKeyVaultSignTool
+
+    - name: Azure Login
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.PBITOOLS_KVI }}
+        tenant-id: ${{ secrets.PBITOOLS_KVT }}
+        subscription-id: ${{ secrets.PBITOOLS_AKV_SUBSCRIPTION_ID }}
+        allow-no-subscriptions: true
+
+    - name: Sign packages
+      shell: cmd
+      working-directory: ./packages
+      env:
+        AKV_URL: ${{ secrets.PBITOOLS_KVU }}
+        AKV_CERT_NAME: ${{ secrets.PBITOOLS_KVC }}
+      run: |
+        NuGetKeyVaultSignTool sign ^
+          -kvu %AKV_URL% ^
+          -kvc %AKV_CERT_NAME% ^
+          -kvm ^
+          -tr http://timestamp.globalsign.com/tsa/advanced ^
+          -td sha256 ^
+          -fd sha256 ^
+          -o ./signed ^
+          *.nupkg
+        NuGetKeyVaultSignTool sign ^
+          -kvu %AKV_URL% ^
+          -kvc %AKV_CERT_NAME% ^
+          -kvm ^
+          -tr http://timestamp.globalsign.com/tsa/advanced ^
+          -td sha256 ^
+          -fd sha256 ^
+          -o ./signed ^
+          *.snupkg
+
+    - name: List signed packages
+      run: ls -R ./packages/signed
+    - name: Upload Artifact
+      id: upload-nupkg
+      uses: actions/upload-artifact@v4
+      with:
+        name: nuget-packages-signed
+        path: ./packages/signed
+    outputs:
+      PKG_VERSION: ${{ needs.build-pack-test.outputs.PKG_VERSION }}
+
+  publish-github-packages: # Push to GitHub Packages if inside pull-request targeting main
+    if: github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'main'
+    runs-on: ubuntu-latest
+    needs: sign-packages
+    permissions:
+      packages: write
+      # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/controlling-permissions-for-github_token
+    steps:
+    - name: Download NUPKG
+      uses: actions/download-artifact@v4
+      with:
+        name: nuget-packages-signed
+        path: ./artifacts
+    - name: List packages
+      run: ls -la ./artifacts
+    - name: Publish to GitHub Packages
+      run: |
+        dotnet nuget push \
+          ./artifacts/*nupkg \
+          --api-key ${{ secrets.GITHUB_TOKEN }} \
+          --source https://nuget.pkg.github.com/${{ github.repository_owner }}
+    - name: Job Summary
+      run: |
+        echo "## Published $VERSION to GitHub Packages" >> $GITHUB_STEP_SUMMARY
+      env:
+        VERSION: ${{ needs.sign-packages.outputs.PKG_VERSION }}
+
+  publish-nuget-org: # Sign nupkg & Push to nuget.org if tag was created on main branch
+    if: github.event_name == 'push' && github.ref_type == 'tag' && github.event.base_ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs: sign-packages
+    steps:
+      - name: Download NUPKG
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-packages-signed
+          path: ./artifacts
+      - name: List packages
+        run: ls -la ./artifacts
+      - name: Publish to nuget.org
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_ORG_API_KEY_FabricTools }}
+        working-directory: ./artifacts
+        run: |
+          dotnet nuget push \
+            "*.nupkg" \
+            --api-key ${{env.NUGET_API_KEY}} \
+            --source https://api.nuget.org/v3/index.json \
+      - name: Job Summary
+        run: |
+          echo "## Published $VERSION to nuget.org" >> $GITHUB_STEP_SUMMARY
+        env:
+          VERSION: ${{ needs.sign-packages.outputs.PKG_VERSION }}

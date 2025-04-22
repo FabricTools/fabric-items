@@ -1,0 +1,62 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>_Generated</CompilerGeneratedFilesOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Title>PBIR.NET</Title>
+    <Description>.NET SDK for the Fabric PBIR Format</Description>
+    <PackageTags>fabric pbir power-bi</PackageTags>
+    <PackageIcon>PBIR.NET.png</PackageIcon>
+    <PackageProjectUrl>https://pbir.net/</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Exclude the output of source generators from the compilation -->
+    <Compile Remove="$(CompilerGeneratedFilesOutputPath)\**\*.g.cs" />
+    <None Include="$(CompilerGeneratedFilesOutputPath)\**\*.g.cs" LinkBase="Generated" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="../../FabricTools.png" />
+    <None Include="PBIR.NET.png">
+      <Link>PBIR.NET.png</Link>
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- NuGet dependencies -->
+    <PackageReference Include="NJsonSchema" />
+    <PackageReference Include="System.ComponentModel.Annotations" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Transitive dependencies, inherited from FabricTools.Items.Core -->
+    <PackageReference Include="Newtonsoft.Json" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" PrivateAssets="All" />
+    <PackageReference Include="AnyOf.Newtonsoft.Json" PrivateAssets="All" />
+    <PackageReference Include="System.IO.Abstractions" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FabricTools.Items.Core\FabricTools.Items.Core.csproj" />
+    <InternalsVisibleTo Include="pbir-cli" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Source generator items -->
+    <AdditionalFiles Include="..\..\external\json-schemas\fabric\item\report\definition\**\*.json" LinkBase="json-schemas" />
+    <EmbeddedResource Include="..\..\external\json-schemas\fabric\item\report\definition\**\*.json" LinkBase="json-schemas">
+      <LogicalName>json-schemas\%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+    <PackageReference Include="FabricTools.Items.CodeGeneration">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>
