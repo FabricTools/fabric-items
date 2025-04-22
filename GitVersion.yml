@@ -1,2 +1,7 @@
 next-version: 0.1.0
 increment: None
+branches:
+  pull-request:
+    label: pr{Number}
+  release:
+    label: RC
