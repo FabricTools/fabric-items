@@ -10,7 +10,6 @@ on:
       - main
       - release/*
       - Release/*
-  workflow_dispatch:
 
 env:
   ENVIRONMENT: >-
