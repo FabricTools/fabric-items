@@ -5,8 +5,13 @@ namespace FabricTools.Items.ComponentModel;
 /// <summary>
 /// A component that has annotations.
 /// </summary>
-public interface IHasAnnotations : IEnumerable<Annotation>
+public interface IHasAnnotations
 {
+    /// <summary>
+    /// Enumerates the component's annotations.
+    /// </summary>
+    IEnumerable<Annotation> Annotations { get; }
+
     /// <summary>
     /// Gets the keys of all annotations.
     /// </summary>
@@ -46,6 +51,9 @@ public abstract class HasAnnotations<TAnnotation> : IHasAnnotations
 #pragma warning restore CS1591
 
     /// <inheritdocs/>
+    IEnumerable<Annotation> IHasAnnotations.Annotations => (GetAnnotations() ?? Enumerable.Empty<TAnnotation>()).Select(Map);
+
+    /// <inheritdocs/>
     [Newtonsoft.Json.JsonIgnore]
     public IEnumerable<string> AnnotationKeys => GetAnnotations() switch
     {
@@ -68,7 +76,7 @@ public abstract class HasAnnotations<TAnnotation> : IHasAnnotations
 
     /// <inheritdocs/>
     [Newtonsoft.Json.JsonIgnore]
-    public string this[string key] {
+    string IHasAnnotations.this[string key] {
         get => Map(GetAnnotations() switch 
         {
             { } annotations when annotations.FirstOrDefault(a => GetKey(a) == key) is { } annotation => annotation,
@@ -87,12 +95,4 @@ public abstract class HasAnnotations<TAnnotation> : IHasAnnotations
         }
     }
 
-    #region IEnumerable
-
-    /// <inheritdoc/>
-    public IEnumerator<Annotation> GetEnumerator() => (GetAnnotations() ?? Enumerable.Empty<TAnnotation>()).Select(Map).GetEnumerator();
-
-    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
-
-    #endregion
 }
