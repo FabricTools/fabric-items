@@ -1,0 +1,26 @@
+<Solution>
+  <Folder Name="/NuGets/">
+    <File Path="src/Directory.Build.props" />
+    <Project Path="src/FabricTools.Items.Core/FabricTools.Items.Core.csproj" />
+    <Project Path="src/FabricTools.Items.Report/FabricTools.Items.Report.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="FabricTools.Items.sln.DotSettings" />
+    <File Path="FabricTools.png" />
+    <File Path="GitVersion.yml" />
+    <File Path="NOTICE.md" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <File Path="test/Directory.Build.props" />
+    <Project Path="test/FabricTools.Items.Report.Tests/FabricTools.Items.Report.Tests.csproj" />
+  </Folder>
+  <Folder Name="/Utils/">
+    <File Path="utils/Directory.Build.props" />
+    <Project Path="utils/FabricTools.Items.AnyOf/FabricTools.Items.AnyOf.csproj" />
+    <Project Path="utils/pbir-cli/pbir-cli.csproj" />
+  </Folder>
+</Solution>

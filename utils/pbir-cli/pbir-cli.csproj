@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>pbir-cli</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>FabricTools.Items.Report.Cli</RootNamespace>
+    <NoWarn Condition=" '$(SuppressWarnings)' != '' ">$(NoWarn);NU1701;MSB3243</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Spectre.Console.Cli" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" />
+    <PackageReference Include="System.IO.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\FabricTools.Items.Report\FabricTools.Items.Report.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Spectre.Console"/>
+    <Using Include="Spectre.Console.Cli"/>
+    <Using Include="System.ComponentModel"/>
+    <Using Include="System.Diagnostics.CodeAnalysis"/>
+    <Using Include="FabricTools.Items.Report"/>
+    <Using Include="FabricTools.Items.Report.Cli"/>
+    <Using Include="System.IO.Abstractions"/>
+  </ItemGroup>
+
+</Project>

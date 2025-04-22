@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>FabricTools.Items.Core</PackageId>
+    <Title>FabricTools.Items.Core</Title>
+    <Description>Contains shared types used by all individual Fabric Item SDKs.</Description>
+    <PackageTags>fabric power-bi</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="AnyOf.Newtonsoft.Json" />
+    <PackageReference Include="System.IO.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Update="navidataIO.Utils" PrivateAssets="None"/>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!-- https://learn.microsoft.com/en-us/nuget/reference/msbuild-targets#advanced-extension-points-to-create-customized-package -->
+    <TargetsForTfmSpecificBuildOutput>
+      $(TargetsForTfmSpecificBuildOutput);
+      AddLocalOutputToPackage
+    </TargetsForTfmSpecificBuildOutput>
+  </PropertyGroup>
+
+  <Target Name="AddLocalOutputToPackage" Condition=" '$(Configuration)' == 'Release' ">
+    <ItemGroup>
+      <BuildOutputInPackage Include="@(ReferencePathWithRefAssemblies)" Condition="'%(Filename)' == 'FabricTools.Items.AnyOf'">
+        <FinalOutputPath>%(ReferencePathWithRefAssemblies.OriginalItemSpec)</FinalOutputPath>
+      </BuildOutputInPackage>
+    </ItemGroup>
+    <Message Importance="high" Text="Added BuildOutputInPackage: @(BuildOutputInPackage)" />
+  </Target>
+
+</Project>

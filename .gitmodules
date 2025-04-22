@@ -1,0 +1,12 @@
+[submodule "external/json-schemas"]
+	path = external/json-schemas
+	url = https://github.com/microsoft/json-schemas.git
+	branch = main
+[submodule "external/powerbi-desktop-samples"]
+	path = external/powerbi-desktop-samples
+	url = https://github.com/microsoft/powerbi-desktop-samples.git
+	branch = main
+[submodule "external/pbir-samples"]
+	path = external/pbir-samples
+	url = https://github.com/FabricTools/pbir-samples.git
+	branch = main
