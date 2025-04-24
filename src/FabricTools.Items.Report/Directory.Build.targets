@@ -1,0 +1,51 @@
+<Project>
+
+  <PropertyGroup>
+    <!-- where to put the packed README -->
+    <_ModifiedReadmeFile>$(IntermediateOutputPath)README.md</_ModifiedReadmeFile>
+
+    <!-- load the entire file, blanks included -->
+    <RawReadmeText>$([System.IO.File]::ReadAllText('$(MSBuildProjectDirectory)\README.md'))</RawReadmeText>
+
+    <!-- rewrite your image links in one go -->
+    <RewrittenReadmeText>
+      $(RawReadmeText.Replace("](../../media/", "](https://raw.githubusercontent.com/FabricTools/fabric-items/main/media/"))
+    </RewrittenReadmeText>
+  </PropertyGroup>
+
+  <UsingTask
+    TaskName="ReadAllLinesKeepEmpty"
+    TaskFactory="CodeTaskFactory"
+    AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <FilePath    ParameterType="System.String"                         Required="true" />
+      <OutputLines ParameterType="Microsoft.Build.Framework.ITaskItem[]" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Linq" />
+      <Code Type="Fragment" Language="cs">
+        var allLines = File.ReadAllLines(FilePath);
+        OutputLines = allLines.Select(line => new TaskItem(line)).ToArray();
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="RewriteReadmeLines" BeforeTargets="_GetPackageFiles;GenerateNuspec;Pack">
+
+    <WriteLinesToFile
+      File="$(_ModifiedReadmeFile)"
+      Lines="$(RewrittenReadmeText)"
+      Overwrite="true" />
+
+    <!-- Pack that file instead of the one in the project root -->
+    <ItemGroup>
+      <None Remove="README.md" />
+      <None Include="$(_ModifiedReadmeFile)"
+            Pack="true"
+            PackagePath=""
+            Visible="false" />
+    </ItemGroup>
+  </Target>
+
+</Project>
