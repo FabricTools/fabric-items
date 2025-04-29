@@ -17,13 +17,13 @@ public class JsonReaderTests : HasTestFolder
         var resource = Resources["Bookmarkd1892fa34230d040162b.bookmark.json"];
         var fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
         {
-            {"report/bookmark.json", new MockFileData(resource.GetString())}
+            {@"C:\report\bookmark.json", new MockFileData(resource.GetString())}
         });
 
         var traceWriter = new MemoryTraceWriter(); // for debugging only
 
         var reader = new PbirDefinitionReader(
-            new DefaultFileSystem(fileSystem, @"C:\report"), // TODO Check this still works when running on Linux
+            new DefaultFileSystem(fileSystem, @"C:\report"),
             NullLoggerFactory.Instance,
             _ => traceWriter);
 
