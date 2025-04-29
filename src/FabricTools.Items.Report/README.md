@@ -4,7 +4,7 @@
 
 ## .NET SDK for the Fabric PBIR Format
 
-The [Fabric PBIR Format](https://fabric.onl/pbir), currently in public preview, is a new schema-based and source control friendly format for Power BI reports. It brings the same code-first benefits to Power BI report authors that the [TMDL](https://fabric.onl/tmdl) provides for Power BI semantic models. PBIR is also known as the "Power BI Enhanced Report Format" or simply the "V4 format".
+The [Fabric PBIR Format](https://fabric.onl/pbir), currently in public preview, is a new schema-based and source control friendly format for Power BI reports. It brings the same code-first benefits to Power BI report authors that the [TMDL](https://fabric.onl/tmdl) format provides for Power BI semantic models. PBIR is also known as the "Power BI Enhanced Report Format" or simply the "V4 format".
 
 Whilst the original ideas and prototypes for what now is the PBIR format were implemented by [`pbi-tools`](https://github.com/pbi-tools) as a community-driven open-source initiative, the PBIR format is fully developed and supported by Microsoft. It effectively replaces black-box binary PBIX files which were ill-suited for source control and collaborative development.
 
