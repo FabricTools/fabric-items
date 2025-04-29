@@ -89,10 +89,10 @@ jobs:
           --no-restore
     - name: dotnet test (Linux/net8.0)
       run: |
-        dotnet test -c Release -f net8.0 --no-build --verbosity ${{env.LOGGER_VERBOSITY}}
+        dotnet run --project test/FabricTools.Items.Report.Tests -c Release -f net8.0 --no-build --verbosity ${{env.LOGGER_VERBOSITY}}
     - name: dotnet test (Linux/net9.0)
       run: |
-        dotnet test -c Release -f net9.0 --no-build --verbosity ${{env.LOGGER_VERBOSITY}}
+        dotnet run --project test/FabricTools.Items.Report.Tests -c Release -f net9.0 --no-build --verbosity ${{env.LOGGER_VERBOSITY}}
     - name: Upload Test Results
       uses: actions/upload-artifact@v4
       with:
