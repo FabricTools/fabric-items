@@ -13,24 +13,6 @@
     </RewrittenReadmeText>
   </PropertyGroup>
 
-  <UsingTask
-    TaskName="ReadAllLinesKeepEmpty"
-    TaskFactory="CodeTaskFactory"
-    AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
-    <ParameterGroup>
-      <FilePath    ParameterType="System.String"                         Required="true" />
-      <OutputLines ParameterType="Microsoft.Build.Framework.ITaskItem[]" Output="true" />
-    </ParameterGroup>
-    <Task>
-      <Using Namespace="System.IO" />
-      <Using Namespace="System.Linq" />
-      <Code Type="Fragment" Language="cs">
-        var allLines = File.ReadAllLines(FilePath);
-        OutputLines = allLines.Select(line => new TaskItem(line)).ToArray();
-      </Code>
-    </Task>
-  </UsingTask>
-
   <Target Name="RewriteReadmeLines" BeforeTargets="_GetPackageFiles;GenerateNuspec;Pack">
 
     <WriteLinesToFile
