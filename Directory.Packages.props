@@ -2,7 +2,7 @@
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <navidataUtilsVersion>1.1.0</navidataUtilsVersion>
-    <FabricToolsCodeGenVersion>1.1.0-62</FabricToolsCodeGenVersion>
+    <FabricToolsCodeGenVersion>1.1.0</FabricToolsCodeGenVersion>
     <NJSonSchemaVersion>11.2.0</NJSonSchemaVersion>
   </PropertyGroup>
   <ItemGroup>
