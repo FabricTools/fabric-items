@@ -16,9 +16,9 @@ public class DefaultFileSystem : IFabricItemFileSystem
     private readonly ILogger _logger;
 
     /// <summary>
-    /// Creates a new instance of <see cref="DefaultFileSystem"/> using the provided <see cref="IFileSystem"/> and the specified base path.
+    /// Creates a new <see cref="DefaultFileSystem"/> instance using the provided <see cref="IFileSystem"/> and the specified base path.
     /// </summary>
-    public DefaultFileSystem(IFileSystem fileSystem, string basePath, ILoggerFactory? loggerFactory = default)
+    public DefaultFileSystem(IFileSystem fileSystem, string basePath, ILoggerFactory? loggerFactory = null)
     {
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _logger = loggerFactory?.CreateLogger<DefaultFileSystem>() ?? NullLoggerFactory.Instance.CreateLogger<DefaultFileSystem>();

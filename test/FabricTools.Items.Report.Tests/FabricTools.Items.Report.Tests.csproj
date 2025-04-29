@@ -10,13 +10,17 @@
       <LinkBase>Samples</LinkBase>
       <LogicalName>%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="..\Resources\**\*.*">
+      <LinkBase>Resources</LinkBase>
+      <LogicalName>Resources\%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="navidataIO.Utils.Testing.Xunit3" />
     <PackageReference Include="Newtonsoft.Json" />
-    <PackageReference Include="AnyOf.Newtonsoft.Json" />
-    <PackageReference Include="System.IO.Abstractions" />
+    <PackageReference Include="TinyMapper" />
+    <PackageReference Include="TestableIO.System.IO.Abstractions.TestingHelpers" />
   </ItemGroup>
 
   <ItemGroup>

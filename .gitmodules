@@ -10,3 +10,7 @@
 	path = external/pbir-samples
 	url = https://github.com/FabricTools/pbir-samples.git
 	branch = main
+[submodule "external/AnyOf"]
+	path = external/AnyOf
+	url = https://github.com/StefH/AnyOf.git
+	branch = main

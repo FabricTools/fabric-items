@@ -5,13 +5,14 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>FabricTools.Items.Report.Cli</RootNamespace>
-    <NoWarn Condition=" '$(SuppressWarnings)' != '' ">$(NoWarn);NU1701;MSB3243</NoWarn>
+    <NoWarn Condition=" '$(SuppressWarnings)' != '' ">$(NoWarn);NU1701;MSB3243;IO0007</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Spectre.Console.Cli" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" />
     <PackageReference Include="System.IO.Abstractions" />
   </ItemGroup>
 

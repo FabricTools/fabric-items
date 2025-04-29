@@ -28,13 +28,14 @@
     <!-- NuGet dependencies -->
     <PackageReference Include="NJsonSchema" />
     <PackageReference Include="System.ComponentModel.Annotations" />
+    <PackageReference Include="navidataIO.Utils.Json" />
   </ItemGroup>
 
   <ItemGroup>
     <!-- Transitive dependencies, inherited from FabricTools.Items.Core -->
+    <!-- They are in here so the types are available inside the project, but private so no NuGet dependencies are declared -->
     <PackageReference Include="Newtonsoft.Json" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" PrivateAssets="All" />
-    <PackageReference Include="AnyOf.Newtonsoft.Json" PrivateAssets="All" />
     <PackageReference Include="System.IO.Abstractions" PrivateAssets="All" />
   </ItemGroup>
 

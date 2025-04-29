@@ -24,7 +24,7 @@ internal static class PbirDocumentExtensions
 
 
     /// <summary>
-    /// Sets the <see cref="IPbirDocumentNode.Parent"/> of a PBIR document
+    /// Sets the <see cref="IPbirDocumentNode.Parent"/> of a PBIR document.
     /// For internal use only.
     /// </summary>
     public static T? SetParent<T>(this T? document, IPbirDocumentNode? parent)
@@ -37,7 +37,7 @@ internal static class PbirDocumentExtensions
 
 
     /// <summary>
-    /// Sets the <see cref="IPbirDocument.OriginalJson"/> of a PBIR document
+    /// Sets the <see cref="IPbirDocument.OriginalJson"/> of a PBIR document.
     /// For internal use only.
     /// </summary>
     public static T SetJson<T>(this T document, JObject json)
@@ -46,6 +46,13 @@ internal static class PbirDocumentExtensions
         document.OriginalJson = json;
         return document;
     }
+
+    /// <summary>
+    /// Returns the <see cref="IPbirDocument.OriginalJson"/> of a PBIR document.
+    /// For internal use only.
+    /// </summary>
+    public static JObject? GetJson<T>(this T document) where T : IPbirDocument => document.OriginalJson;
+
 
     /// <summary>
     /// Returns the combined path of the document, relative to the root of the project.

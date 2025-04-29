@@ -12,6 +12,7 @@
     <File Path="FabricTools.png" />
     <File Path="GitVersion.yml" />
     <File Path="NOTICE.md" />
+    <File Path="nuget.config" />
     <File Path="README.md" />
   </Folder>
   <Folder Name="/Tests/">

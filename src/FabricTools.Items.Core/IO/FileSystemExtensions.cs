@@ -14,7 +14,8 @@ public static class FileSystemExtensions
     /// </summary>
     public static void TryReadFile(this IFabricItemFileSystem fileSystem, RelativeFilePath relativePath
         , Action<TextReader, RelativeFilePath> onSuccess
-        , Action onNotFound)
+        , Action<string> onNotFound
+        , Action<Exception>? onError = null)
     {
         TextReader reader;
         try
@@ -23,7 +24,15 @@ public static class FileSystemExtensions
         }
         catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException)
         {
-            onNotFound();
+            onNotFound(ex.Message);
+            return;
+        }
+        catch (Exception ex)
+        {
+            if (onError is null)
+                throw;
+
+            onError?.Invoke(ex);
             return;
         }
         using (reader)
