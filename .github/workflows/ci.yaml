@@ -43,6 +43,13 @@ jobs:
         sparse-checkout: |
           fabric
     - uses: actions/checkout@v4
+      name: Checkout StefH/AnyOf
+      with:
+        repository: StefH/AnyOf
+        path: 'external/AnyOf'
+        sparse-checkout: |
+          src/AnyOf.System.Text.Json
+    - uses: actions/checkout@v4
       name: Checkout pbir-samples
       with:
         repository: FabricTools/pbir-samples
