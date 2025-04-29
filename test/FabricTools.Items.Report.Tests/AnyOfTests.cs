@@ -1,8 +1,10 @@
 ﻿// Copyright (c) 2024 navidata.io Corp
 
+using System.Collections.ObjectModel;
 using AnyOfTypes;
 using Newtonsoft.Json;
 using FabricTools.Items.Json;
+using Newtonsoft.Json.Linq;
 
 namespace FabricTools.Items.Report.Tests;
 
@@ -149,4 +151,66 @@ public class AnyOfTests
         Assert.Equal(12, result.Union.Value.Second.Number);
     }
 
+}
+
+public class AnyOfParserTests
+{
+    [Fact]
+    public void CanParseBookmarkHighlightSelection()
+    {
+        var json = """
+{
+    "Selection": [{
+        "DataMap": {
+            "Key": [{
+                "ScopeId": {
+                    "Type": "ScopeId",
+                    "Value": "1234"
+                }
+            }]
+        }
+    }]
+}
+""";
+        var serializer = new JsonSerializer();
+        serializer.Converters.Add(new NullableAnyOfJsonConverter());
+
+        using var reader = new JsonTextReader(new StringReader(json));
+        var result = serializer.Deserialize<TestBookmark>(reader);
+
+        Assert.NotNull(result);
+        Assert.True(result.Selection.HasValue);
+        Assert.True(result.Selection.Value.IsSecond);
+        Assert.Collection(result.Selection.Value.Second,
+            item => {
+                Assert.NotNull(item.DataMap);
+                Assert.True(item.DataMap.ContainsKey("Key"));
+                Assert.Collection(item.DataMap["Key"],
+                    x => Assert.Equal("1234", x.ScopeId["Value"]));
+            });
+    }
+}
+
+public class TestBookmark
+{
+    public AnyOf<T1, ICollection<T2>>? Selection { get; set; }
+
+    public class T1
+    {
+        public string Name { get; set; }
+    }
+
+    public class T2
+    {
+        public class Map : Dictionary<string, Collection<T3>>
+        {
+        }
+
+        public Map DataMap { get; set; }
+    }
+
+    public class T3
+    {
+        public JToken ScopeId { get; set; }
+    }
 }

@@ -2,8 +2,6 @@
 
 using Newtonsoft.Json;
 
-#pragma warning disable IO0007
-
 namespace FabricTools.Items.Report.Cli;
 
 internal sealed class PbirReadWriteCommand : FileSystemCommand<PbirReadWriteCommand.Settings>

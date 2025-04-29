@@ -1,11 +1,13 @@
 // Copyright (c) 2024 navidata.io Corp
 
+using System.Diagnostics;
 using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using FabricTools.Items.IO;
 using FabricTools.Items.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace FabricTools.Items.Report;
 
@@ -21,12 +23,22 @@ public class PbirDefinitionReader
     /// <summary>
     /// Creates a new instance of <see cref="PbirDefinitionReader"/>.
     /// </summary>
-    public PbirDefinitionReader(IFabricItemFileSystem fileSystem, ILoggerFactory? loggerFactory = default)
+    public PbirDefinitionReader(IFabricItemFileSystem fileSystem, ILoggerFactory? loggerFactory = null, bool enableTracing = false)
+        : this(fileSystem
+            , loggerFactory ?? NullLoggerFactory.Instance, 
+            enableTracing ? (logger => new LoggingTraceWriter(logger)) : null)
+    {
+    }
+
+    internal PbirDefinitionReader(IFabricItemFileSystem fileSystem, ILoggerFactory loggerFactory,
+        Func<ILogger, ITraceWriter>? traceWriterFactory)
     {
         this._fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-        _logger = loggerFactory?.CreateLogger<PbirDefinitionReader>() ?? NullLoggerFactory.Instance.CreateLogger<PbirDefinitionReader>();
+        _logger = loggerFactory.CreateLogger<PbirDefinitionReader>();
 
-        _jsonSerializer = new JsonSerializer { };
+        _jsonSerializer = new JsonSerializer();
+        if (traceWriterFactory is not null)
+            _jsonSerializer.TraceWriter = traceWriterFactory(_logger);
         _jsonSerializer.Converters.Add(new NullableAnyOfJsonConverter());
     }
 
@@ -35,24 +47,35 @@ public class PbirDefinitionReader
     /// of <typeparamref name="T"/> and passes it to the <paramref name="onContentReady"/> callback method.
     /// Does nothing if the file is not found.
     /// </summary>
-    private void ReadFile<T>(RelativeFilePath folderPath, RelativeFilePath filePath, Action<T> onContentReady)
+    internal void ReadFile<T>(RelativeFilePath folderPath, RelativeFilePath filePath, Action<T> onContentReady)
         where T : IPbirDocument, new()
     {
         var fullPath = folderPath + filePath;
 
-        _fileSystem.TryReadFile(fullPath, (reader, _) => {
+        _fileSystem.TryReadFile(fullPath, (reader, _) => { 
+            _logger.LogDebug("Reading file: {RelativeFilePath}", fullPath);
+
             using var jsonReader = new JsonTextReader(reader);
 
             var json = JObject.Load(jsonReader);
-            var doc = json.ToObject<T>(_jsonSerializer)! // TODO Handle serialization errors??
-                .SetPath(filePath) // parent folders are inferred from parent/child hierarchy
-                .SetJson(json);
+            try
+            {
+                var doc = json.ToObject<T>(_jsonSerializer)! // TODO Handle serialization errors??
+                    .SetPath(filePath) // parent folders are inferred from parent/child hierarchy
+                    .SetJson(json);
 
-            onContentReady(doc);
+                onContentReady(doc);
+            }
+            catch (Exception e)
+            {
+                var ex = e;
+                // TODO Throw a more specific exception
+                throw;
+            }
 
-            _logger.LogDebug("Read file: {RelativeFilePath}", fullPath);
+            _logger.LogInformation("Reading file completed: {RelativeFilePath}", fullPath);
         },
-            () => _logger.LogWarning("File not found: {RelativeFilePath}", fullPath)
+            message => _logger.LogWarning("File not found: {RelativeFilePath} ({Message})", fullPath, message)
         );
     }
 
@@ -64,7 +87,7 @@ public class PbirDefinitionReader
         where TDocument : class, IPbirDocument, new()
         where TMetadata : class, IPbirDocument, new()
     {
-        TMetadata? metadata = default;
+        TMetadata? metadata = null;
         ReadFile<TMetadata>(folderPath, metadataFile, meta => metadata = meta);
 
         targetCollection.Metadata = metadata;
@@ -117,7 +140,7 @@ public class PbirDefinitionReader
                 // - Read page.json
                 // - Read visuals/*/visual.json
 
-                Definitions.Page? reportPage = default;
+                Definitions.Page? reportPage = null;
 
                 ReadFile<Definitions.Page>(pagesPath, pagePath + PbirNames.PageFile, page => reportPage = page);
 
@@ -129,7 +152,7 @@ public class PbirDefinitionReader
 
                 foreach (var visualPath in _fileSystem.EnumerateFolders(visualsPath))
                 {
-                    Definitions.VisualContainer? visualDoc = default;
+                    Definitions.VisualContainer? visualDoc = null;
 
                     ReadFile<Definitions.VisualContainer>(
                         visualsPath, visualPath + PbirNames.VisualFile,
@@ -160,4 +183,33 @@ public class PbirDefinitionReader
         return definition;
     }
 
+    internal class LoggingTraceWriter(ILogger logger) : ITraceWriter
+    {
+        private static LogLevel MapLevel(TraceLevel level) => level switch
+        {
+            TraceLevel.Error => LogLevel.Error,
+            TraceLevel.Warning => LogLevel.Warning,
+            TraceLevel.Info => LogLevel.Information,
+            TraceLevel.Verbose => LogLevel.Debug,
+            _ => throw new ArgumentOutOfRangeException(nameof(level), level, null)
+        };
+
+        public void Trace(TraceLevel level, string message, Exception? ex)
+        {
+            var logLevel = MapLevel(level);
+            if (!logger.IsEnabled(logLevel))
+                return;
+
+            if (ex is not null)
+            {
+                logger.Log(logLevel, ex, message);
+            }
+            else
+            {
+                logger.Log(logLevel, message);
+            }
+        }
+
+        public TraceLevel LevelFilter => TraceLevel.Verbose;
+    }
 }

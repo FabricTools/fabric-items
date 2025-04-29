@@ -3,10 +3,26 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net8.0;net9.0</TargetFrameworks>
     <RootNamespace>FabricTools.Items</RootNamespace>
-    <Nullable>disable</Nullable>
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
     <NoWarn>$(NoWarn);CS8601</NoWarn>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\external\AnyOf\src\AnyOf.System.Text.Json\Extensions\ReflectionHelpers.cs"
+             Link="AnyOf\Extensions\ReflectionHelpers.cs" />
+    <Compile Include="..\..\external\AnyOf\src\AnyOf.System.Text.Json\Matcher\MatchFinder.cs"
+             Link="AnyOf\Matcher\MatchFinder.cs" />
+    <Compile Include="..\..\external\AnyOf\src\AnyOf.System.Text.Json\Models\ListDetails.cs"
+             Link="AnyOf\Models\ListDetails.cs" />
+    <Compile Include="..\..\external\AnyOf\src\AnyOf.System.Text.Json\Models\PropertyDetails.cs"
+             Link="AnyOf\Models\PropertyDetails.cs" />
+    <Compile Include="..\..\external\AnyOf\src\AnyOf.System.Text.Json\Models\PropertyMap.cs"
+             Link="AnyOf\Models\PropertyMap.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="FabricTools.Items.Core" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AnyOf.SourceGenerator">

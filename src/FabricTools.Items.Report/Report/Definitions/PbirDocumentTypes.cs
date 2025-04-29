@@ -4,13 +4,14 @@ using FabricTools.Items.ComponentModel;
 
 namespace FabricTools.Items.Report.Definitions;
 
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS1591  // Missing XML comment for publicly visible type or member
+#pragma warning disable IDE0090 // Use 'new(...)' to simplify object creation
 
 [PbirDocument(PbirNames.ReportFile), Newtonsoft.Json.JsonObject]
 public partial class Report : HasAnnotations<ReportAnnotation>
 {
     protected override ReportAnnotation Convert(Annotation annotation) => new ReportAnnotation { Name = annotation.Key, Value = annotation.Value };
-    protected override ICollection<ReportAnnotation> GetAnnotations() => Annotations;
+    protected override ICollection<ReportAnnotation>? GetAnnotations() => Annotations;
     protected override ICollection<ReportAnnotation> EnsureAnnotations() => Annotations ??= [];
     protected override string GetKey(ReportAnnotation annotation) => annotation.Name;
     protected override Annotation Map(ReportAnnotation annotation) => new Annotation(annotation.Name, annotation.Value);
@@ -21,7 +22,7 @@ public partial class Report : HasAnnotations<ReportAnnotation>
 public partial class Page : HasAnnotations<PageAnnotation>
 {
     protected override PageAnnotation Convert(Annotation annotation) => new PageAnnotation { Name = annotation.Key, Value = annotation.Value };
-    protected override ICollection<PageAnnotation> GetAnnotations() => Annotations;
+    protected override ICollection<PageAnnotation>? GetAnnotations() => Annotations;
     protected override ICollection<PageAnnotation> EnsureAnnotations() => Annotations ??= [];
     protected override string GetKey(PageAnnotation annotation) => annotation.Name;
     protected override Annotation Map(PageAnnotation annotation) => new Annotation(annotation.Name, annotation.Value);
@@ -40,7 +41,7 @@ public partial class Page : HasAnnotations<PageAnnotation>
 public partial class VisualContainer : HasAnnotations<VisualContainerAnnotation>
 {
     protected override VisualContainerAnnotation Convert(Annotation annotation) => new VisualContainerAnnotation { Name = annotation.Key, Value = annotation.Value };
-    protected override ICollection<VisualContainerAnnotation> GetAnnotations() => Annotations;
+    protected override ICollection<VisualContainerAnnotation>? GetAnnotations() => Annotations;
     protected override ICollection<VisualContainerAnnotation> EnsureAnnotations() => Annotations ??= [];
     protected override string GetKey(VisualContainerAnnotation annotation) => annotation.Name;
     protected override Annotation Map(VisualContainerAnnotation annotation) => new Annotation(annotation.Name, annotation.Value);
@@ -49,6 +50,9 @@ public partial class VisualContainer : HasAnnotations<VisualContainerAnnotation>
 
     private VisualContainerMobileState? _mobileState;
 
+    /// <summary>
+    /// Gets or sets the (optional) mobile state of the visual.
+    /// </summary>
     [Newtonsoft.Json.JsonIgnore]
     public VisualContainerMobileState? MobileState
     {

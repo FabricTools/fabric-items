@@ -57,7 +57,8 @@ public class PbirDefinition
     /// </summary>
     public static PbirDefinition FromPath(string path, ILoggerFactory? loggerFactory = null) =>
         new PbirDefinitionReader(
-                new DefaultFileSystem(new System.IO.Abstractions.FileSystem(), path, loggerFactory))
+                new DefaultFileSystem(new System.IO.Abstractions.FileSystem(), path, loggerFactory)
+                , loggerFactory)
             .Read();
 
     /// <summary>

@@ -9,10 +9,10 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" />
-    <PackageReference Include="AnyOf.Newtonsoft.Json" />
+    <PackageReference Include="TinyMapper" />
     <PackageReference Include="System.IO.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
-    <PackageReference Update="navidataIO.Utils" PrivateAssets="None"/>
+    <PackageReference Update="navidataIO.Utils" PrivateAssets="None"/> <!-- we do want a NuGet dependency here, but not in any other project -->
   </ItemGroup>
 
   <PropertyGroup>

@@ -4,8 +4,6 @@ using FabricTools.Items.Report.Schemas;
 using Newtonsoft.Json;
 using DirectoryInfoWrapper = Microsoft.Extensions.FileSystemGlobbing.Abstractions.DirectoryInfoWrapper;
 
-#pragma warning disable IO0007
-
 namespace FabricTools.Items.Report.Cli;
 
 internal sealed class PbirValidateCommand : FileSystemCommand<PbirValidateCommand.Settings>
@@ -26,7 +24,9 @@ internal sealed class PbirValidateCommand : FileSystemCommand<PbirValidateComman
 
     public override ValidationResult Validate(CommandContext context, Settings settings)
     {
+#pragma warning disable IO0007
         if (!(settings.InputDirectoryInfo = new DirectoryInfo(settings.InputPath)).Exists)
+#pragma warning restore IO0007
             return ValidationResult.Error($"The input directory '{settings.InputPath}' does not exist.");
 
         return ValidationResult.Success();

@@ -16,21 +16,26 @@ public class PbirDefinitionWriter
     private readonly IFabricItemFileSystem _fileSystem;
     private readonly JsonSerializer _jsonSerializer;
 
+    internal static JsonSerializer CreateDefaultSerializer()
+    {
+        var serializer = new JsonSerializer { };
+        serializer.Converters.Add(new NullableAnyOfJsonConverter());
+        serializer.Converters.Add(new DoubleValueJsonConverter());
+        serializer.Converters.Add(new EnumJsonConverter());
+        return serializer;
+    }
+
     /// <summary>
     /// Creates a new instance of <see cref="PbirDefinitionWriter"/>.
     /// </summary>
     public PbirDefinitionWriter(IFabricItemFileSystem fileSystem
         , Action<JsonSerializer>? configureSerializer = null
-        , ILoggerFactory? loggerFactory = default)
+        , ILoggerFactory? loggerFactory = null)
     {
         this._fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _logger = loggerFactory?.CreateLogger<PbirDefinitionReader>() ?? NullLoggerFactory.Instance.CreateLogger<PbirDefinitionReader>();
 
-        _jsonSerializer = new JsonSerializer { };
-        _jsonSerializer.Converters.Add(new NullableAnyOfJsonConverter());
-        _jsonSerializer.Converters.Add(new DoubleValueJsonConverter());
-        _jsonSerializer.Converters.Add(new EnumJsonConverter());
-
+        _jsonSerializer = CreateDefaultSerializer();
         configureSerializer?.Invoke(_jsonSerializer);
     }
 
