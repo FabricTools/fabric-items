@@ -5,7 +5,7 @@ using navidataIO.Utils.Json;
 namespace FabricTools.Items.Report.Conversion;
 
 /// <summary>
-/// A container for the individual components of the V1 legacy <c>v1MajorReport.json</c> document.
+/// A container for the individual components of the legacy V1 <c>report.json</c> document.
 /// </summary>
 public class V1ReportContainer(V1MajorReportObject report)
 {
