@@ -31,25 +31,25 @@ jobs:
       NuGetPackageSourceCredentials_FabricToolsGH: "Username=${{ github.repository_owner }};Password=${{ secrets.GITHUB_TOKEN }}"
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         fetch-depth: 0
         submodules: false
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       name: Checkout microsoft/json-schemas
       with:
         repository: microsoft/json-schemas
         path: 'external/json-schemas'
         sparse-checkout: |
           fabric
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       name: Checkout StefH/AnyOf
       with:
         repository: StefH/AnyOf
         path: 'external/AnyOf'
         sparse-checkout: |
           src/AnyOf.System.Text.Json
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       name: Checkout pbir-samples
       with:
         repository: FabricTools/pbir-samples
