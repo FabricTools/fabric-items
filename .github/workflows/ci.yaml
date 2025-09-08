@@ -66,7 +66,7 @@ jobs:
         restore-keys: |
           nuget-
     - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
     - name: Register private GitHub Packages NuGet feed
       run: dotnet nuget add source --name FabricToolsGH "https://nuget.pkg.github.com/FabricTools/index.json"
     - name: dotnet info
