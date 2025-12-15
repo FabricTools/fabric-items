@@ -134,7 +134,7 @@ jobs:
 
     steps:
     - name: Download NUPKG
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
       with:
         name: nuget-packages
         path: ./packages
@@ -198,7 +198,7 @@ jobs:
       # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/controlling-permissions-for-github_token
     steps:
     - name: Download NUPKG
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
       with:
         name: nuget-packages-signed
         path: ./artifacts
@@ -222,7 +222,7 @@ jobs:
     needs: sign-packages
     steps:
       - name: Download NUPKG
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: nuget-packages-signed
           path: ./artifacts
